@@ -1,4 +1,4 @@
-package com.zsy.frame.lib.net.http.volley.app.encrypt;
+package com.zsy.frame.lib.net.http.encrypt;
 
 public class Base64Encoder {
 	private static final char last2byte = (char) Integer.parseInt("00000011", 2);

@@ -8,13 +8,11 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.zsy.frame.lib.net.http.volley.app.encrypt.Base64Encoder;
-import com.zsy.frame.lib.net.http.volley.app.encrypt.MD5Security;
+import com.zsy.frame.lib.net.http.encrypt.Base64Encoder;
+import com.zsy.frame.lib.net.http.encrypt.MD5Security;
 
 /**
  * 用于文件上传时，添加验证字段,惠信用到了
- * @author fanxing
- *
  */
 public class FileParamValidatorParam {
 	// 验证字段参数key
