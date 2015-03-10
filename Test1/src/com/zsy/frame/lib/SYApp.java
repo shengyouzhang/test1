@@ -12,6 +12,7 @@ import com.zsy.frame.lib.image.imageloader.core.listener.PauseOnScrollListener;
 import com.zsy.frame.lib.image.imageloader.utils.ImgCacheUtils;
 import com.zsy.frame.lib.net.http.volley.app.VolleyRequestManager;
 import com.zsy.frame.lib.net.http.volley.toolbox.ImageLoader.ImageListener;
+import com.zsy.frame.lib.ui.SYActivityManager;
 import com.zsy.frame.lib.utils.SystemTool;
 
 /**
@@ -93,6 +94,7 @@ public abstract class SYApp extends Application {
 		// HttpStack stack = new HttpClientStack(AndroidHttpClient.newInstance(userAgent));
 		// VolleyRequestManager.init(this, stack, SYConfig.IS_DEBUG_ENABLE);
 	}
+	
 
 	/**
 	 * @description：清空全局变量数据
@@ -104,4 +106,11 @@ public abstract class SYApp extends Application {
 			syAppMap.clear();
 		}
 	}
+	
+	@Override
+	public void onTerminate() {
+		SYActivityManager.create().AppExit(null);
+		super.onTerminate();
+	}
+	
 }
