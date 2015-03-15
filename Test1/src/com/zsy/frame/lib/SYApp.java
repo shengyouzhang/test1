@@ -89,12 +89,13 @@ public abstract class SYApp extends Application {
 		Security.setProperty("networkaddress.cache.ttl", String.valueOf(10 * 60));
 		Security.setProperty("networkaddress.cache.negative.ttl", String.valueOf(0));
 
+		// 我们平时大多采用Volly.newRequestQueue(context)的默认实现，构建RequestQueue。
+		// 通过源码可以看出，我们可以抛开 Volley 工具类构建自定义的RequestQueue，采用自定义的HttpStatck，采用自定义的Network实现，采用自定义的Cache实现等来构建RequestQueue。
 		VolleyRequestManager.init(this, SYConfig.IS_DEBUG_ENABLE);
 		// String userAgent = "volley/0";
 		// HttpStack stack = new HttpClientStack(AndroidHttpClient.newInstance(userAgent));
 		// VolleyRequestManager.init(this, stack, SYConfig.IS_DEBUG_ENABLE);
 	}
-	
 
 	/**
 	 * @description：清空全局变量数据
@@ -106,11 +107,11 @@ public abstract class SYApp extends Application {
 			syAppMap.clear();
 		}
 	}
-	
+
 	@Override
 	public void onTerminate() {
 		SYActivityManager.create().AppExit(null);
 		super.onTerminate();
 	}
-	
+
 }

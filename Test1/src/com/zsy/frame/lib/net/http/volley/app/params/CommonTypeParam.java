@@ -1,10 +1,9 @@
 package com.zsy.frame.lib.net.http.volley.app.params;
 
 /**
- * 
- * 常规请求参数键值对封装，提供默认值，具体情况需要重写getValue方法
- * @author fanxing
- * @param <T>
+ * @description：常规请求参数键值对封装，提供默认值，具体情况需要重写getValue方法
+ * @author samy
+ * @date 2015-3-15 下午4:00:28
  */
 public class CommonTypeParam<T> {
 

@@ -46,6 +46,12 @@ import com.zsy.frame.lib.net.http.volley.VolleyLog;
 
 /**
  * A network performing Volley requests over an {@link HttpStack}.
+ * 
+ * 实现 Network，Volley 中默认的网络接口实现类。调用HttpStack处理请求，并将结果转换为可被ResponseDelivery处理的NetworkResponse。
+主要实现了以下功能：
+(1). 利用 HttpStack 执行网络请求。
+(2). 如果 Request 中带有实体信息，如 Etag,Last-Modify 等，则进行缓存新鲜度的验证，并处理 304（Not Modify）响应。
+(3). 如果发生超时，认证失败等错误，进行重试操作，直到成功、抛出异常(不满足重试策略等)结束。
  */
 public class BasicNetwork implements Network {
 	protected static final boolean DEBUG = VolleyLog.DEBUG;

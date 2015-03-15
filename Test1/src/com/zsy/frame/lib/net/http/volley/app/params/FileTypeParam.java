@@ -5,6 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+/**
+ * @description：文件上传请求参数
+ * @author samy
+ * @date 2015-3-15 下午4:57:34
+ */
 public class FileTypeParam {
 	public String key;
 	public InputStream inputStream;

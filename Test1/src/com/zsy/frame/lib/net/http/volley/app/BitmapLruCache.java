@@ -1,7 +1,3 @@
-/*
- * Created by Storm Zhang, Feb 11, 2014.
- */
-
 package com.zsy.frame.lib.net.http.volley.app;
 
 import android.graphics.Bitmap;

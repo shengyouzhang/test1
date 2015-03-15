@@ -48,9 +48,7 @@ public class RsaHelper {
 	 * java端公钥转换成C#公钥
 	 */
 	public static String encodePublicKeyToXml(PublicKey key) {
-		if (!RSAPublicKey.class.isInstance(key)) {
-			return null;
-		}
+		if (!RSAPublicKey.class.isInstance(key)) { return null; }
 		RSAPublicKey pubKey = (RSAPublicKey) key;
 		StringBuilder sb = new StringBuilder();
 
@@ -111,9 +109,7 @@ public class RsaHelper {
 	 * java端私钥转换成C#私钥
 	 */
 	public static String encodePrivateKeyToXml(PrivateKey key) {
-		if (!RSAPrivateCrtKey.class.isInstance(key)) {
-			return null;
-		}
+		if (!RSAPrivateCrtKey.class.isInstance(key)) { return null; }
 		RSAPrivateCrtKey priKey = (RSAPrivateCrtKey) key;
 		StringBuilder sb = new StringBuilder();
 
@@ -308,7 +304,7 @@ public class RsaHelper {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 返回两个字符串中间的内容
 	 * 

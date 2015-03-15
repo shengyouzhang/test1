@@ -13,7 +13,6 @@ import com.zsy.frame.lib.net.http.volley.Response.Listener;
 import com.zsy.frame.lib.net.http.volley.toolbox.HttpHeaderParser;
 
 /**
- * @author fanxing
  *         不支持嵌套泛型 如List<T>
  * @param <T>
  */

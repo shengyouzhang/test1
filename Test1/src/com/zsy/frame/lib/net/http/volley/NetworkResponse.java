@@ -20,6 +20,15 @@ import org.apache.http.HttpStatus;
 
 /**
  * Data and headers returned from {@link Network#performRequest(Request)}.
+ * 
+ * Network中方法 performRequest 的返回值，Request的 parseNetworkResponse(…) 方法入参，是 Volley 中用于内部 Response 转换的一级。
+封装了网络请求响应的 StatusCode，Headers 和 Body 等。
+(1). 成员变量
+int statusCode Http 响应状态码
+byte[] data Body 数据
+Map<String, String> headers 响应 Headers
+boolean notModified 表示是否为 304 响应
+long networkTimeMs 请求耗时
  */
 public class NetworkResponse {
 	/**

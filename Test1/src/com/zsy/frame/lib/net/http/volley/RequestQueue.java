@@ -31,6 +31,9 @@ import android.os.Looper;
  * Calling {@link #add(Request)} will enqueue the given Request for dispatch,
  * resolving from either cache or network on a worker thread, and then delivering
  * a parsed response on the main thread.
+ * 
+ * 表示请求队列，里面包含一个CacheDispatcher(用于处理走缓存请求的调度线程)、NetworkDispatcher数组(用于处理走网络请求的调度线程)，
+ * 一个ResponseDelivery(返回结果分发接口)，通过 start() 函数启动时会启动CacheDispatcher和NetworkDispatchers。
  */
 public class RequestQueue {
 
@@ -46,6 +49,7 @@ public class RequestQueue {
 	 *     <li>get(cacheKey) returns waiting requests for the given cache key. The in flight request
 	 *          is <em>not</em> contained in that list. Is null if no requests are staged.</li>
 	 * </ul>
+	 * 维护了一个等待请求的集合，如果一个请求正在被处理并且可以被缓存，后续的相同 url 的请求，将进入此等待队列。
 	 */
 	private final Map<String, Queue<Request<?>>> mWaitingRequests = new HashMap<String, Queue<Request<?>>>();
 
@@ -53,9 +57,16 @@ public class RequestQueue {
 	 * The set of all requests currently being processed by this RequestQueue. A Request
 	 * will be in this set if it is waiting in any queue or currently being processed by
 	 * any dispatcher.
+	 * 
+	 * 维护了一个正在进行中，尚未完成的请求集合。
 	 */
 	private final Set<Request<?>> mCurrentRequests = new HashSet<Request<?>>();
 
+	/**
+	 * (1). 主要成员变量
+	 RequestQueue 中维护了两个基于优先级的 Request 队列，缓存请求队列和网络请求队列。
+	放在缓存请求队列中的 Request，将通过缓存获取数据；放在网络请求队列中的 Request，将通过网络获取数据。
+	 */
 	/** The cache triage queue. */
 	private final PriorityBlockingQueue<Request<?>> mCacheQueue = new PriorityBlockingQueue<Request<?>>();
 
@@ -118,6 +129,16 @@ public class RequestQueue {
 
 	/**
 	 * Starts the dispatchers in this queue.
+	 * 
+	 * Volley 的总体设计图
+	 * 主要是通过两种Diapatch Thread不断从RequestQueue中取出请求，根据是否已缓存调用Cache或Network这两类数据获取接口之一，
+	 * 从内存缓存或是服务器取得请求的数据，然后交由ResponseDelivery去做结果分发及回调处理
+	 * 
+	 * 
+	 * (2). 启动队列
+	创建出 RequestQueue 以后，调用 start 方法，启动队列。
+	start 方法中，开启一个缓存调度线程CacheDispatcher和 n 个网络调度线程NetworkDispatcher，这里 n 默认为4，存在优化的余地，比如可以根据 CPU 核数以及网络类型计算更合适的并发数。
+	缓存调度线程不断的从缓存请求队列中取出 Request 去处理，网络调度线程不断的从网络请求队列中取出 Request 去处理。
 	 */
 	public void start() {
 		stop(); // Make sure any currently running dispatchers are stopped.
@@ -172,6 +193,13 @@ public class RequestQueue {
 	/**
 	 * Cancels all requests in this queue for which the given filter applies.
 	 * @param filter The filtering function to use
+	 * 
+	 * (5). 请求取消
+	public void cancelAll(RequestFilter filter)
+	public void cancelAll(final Object tag)
+	取消当前请求集合中所有符合条件的请求。
+	filter 参数表示可以按照自定义的过滤器过滤需要取消的请求。
+	tag 表示按照Request.setTag设置好的 tag 取消请求，比如同属于某个 Activity 的。
 	 */
 	public void cancelAll(RequestFilter filter) {
 		synchronized (mCurrentRequests) {
@@ -201,6 +229,8 @@ public class RequestQueue {
 	 * Adds a Request to the dispatch queue.
 	 * @param request The request to service
 	 * @return The passed-in request
+	(3). 加入请求
+	public <T> Request<T> add(Request<T> request);
 	 */
 	public <T> Request<T> add(Request<T> request) {
 		// Tag the request as belonging to this queue and add it to the set of current requests.
@@ -250,6 +280,13 @@ public class RequestQueue {
 	 *
 	 * <p>Releases waiting requests for <code>request.getCacheKey()</code> if
 	 *      <code>request.shouldCache()</code>.</p>
+	 *      (4). 请求完成
+	void finish(Request<?> request)
+	Request 请求结束
+
+	(1). 首先从正在进行中请求集合mCurrentRequests中移除该请求。
+	(2). 然后查找请求等待集合mWaitingRequests中是否存在等待的请求，如果存在，则将等待队列移除，
+	并将等待队列所有的请求添加到缓存请求队列中，让缓存请求处理线程CacheDispatcher自动处理。
 	 */
 	void finish(Request<?> request) {
 		// Remove from the set of requests currently being processed.

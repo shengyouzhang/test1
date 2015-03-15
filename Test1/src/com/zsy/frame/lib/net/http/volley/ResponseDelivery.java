@@ -13,6 +13,18 @@
 
 package com.zsy.frame.lib.net.http.volley;
 
+/**
+ * @description：返回结果分发接口，目前只有基于ExecutorDelivery的在入参 handler 对应线程内进行分发
+ * 
+ * 请求结果的传输接口，用于传递请求结果或者请求错误。
+有三个方法：
+public void postResponse(Request<?> request, Response<?> response);
+此方法用于传递请求结果，request 和 response 参数分别表示请求信息和返回结果信息。
+public void postResponse(Request<?> request, Response<?> response, Runnable runnable);
+此方法用于传递请求结果，并在完成传递后执行 Runnable。
+public void postError(Request<?> request, VolleyError error);
+此方法用于传输请求错误。
+ */
 public interface ResponseDelivery {
 	/**
 	 * Parses a response from the network or cache and delivers it.

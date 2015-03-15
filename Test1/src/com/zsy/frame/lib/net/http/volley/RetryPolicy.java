@@ -15,6 +15,14 @@ package com.zsy.frame.lib.net.http.volley;
 
 /**
  * Retry policy for a request.
+ * 重试策略接口
+<br/>有三个方法：
+public int getCurrentTimeout();
+<br/>获取当前请求用时（用于Log）
+public int getCurrentRetryCount();
+<br/>获取已经重试的次数（用于Log）
+public void retry(VolleyError error) throws VolleyError;
+确定是否重试，参数为这次异常的具体信息。在请求异常时此接口会被调用，可在此函数实现中抛出传入的异常表示停止重试。
  */
 public interface RetryPolicy {
 

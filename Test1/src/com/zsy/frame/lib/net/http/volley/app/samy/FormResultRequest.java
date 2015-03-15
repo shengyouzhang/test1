@@ -11,7 +11,6 @@ import com.google.gson.reflect.TypeToken;
 import com.zsy.frame.lib.SYLoger;
 import com.zsy.frame.lib.net.http.volley.NetworkResponse;
 import com.zsy.frame.lib.net.http.volley.ParseError;
-import com.zsy.frame.lib.net.http.volley.Request.Method;
 import com.zsy.frame.lib.net.http.volley.Response;
 import com.zsy.frame.lib.net.http.volley.Response.ErrorListener;
 import com.zsy.frame.lib.net.http.volley.Response.Listener;
@@ -29,8 +28,6 @@ import com.zsy.frame.lib.net.http.volley.toolbox.HttpHeaderParser;
 					System.out.println(cacheStr);
 				}
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	<br>
@@ -95,7 +92,7 @@ public class FormResultRequest<T> extends FormBaseRequest<RequestResult<T>>{
 		}
 	}
 	/**
-	 * 追加请求地址
+	 * 追加请求地址(又进才有出)
 	 */
     @Override
     protected void deliverResponse(RequestResult<T> response) {

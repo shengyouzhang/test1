@@ -23,6 +23,9 @@ import com.zsy.frame.lib.net.http.volley.Request;
 
 /**
  * An HTTP stack abstraction.
+ * 用于处理 Http 请求，返回请求结果的接口。目前 Volley 中的实现有基于 HttpURLConnection 的 HurlStack 和 基于 Apache HttpClient 的 HttpClientStack。
+ * 执行 Request 代表的请求，第二个参数表示发起请求之前，添加额外的请求 Headers。
+唯一方法，执行请求
  */
 public interface HttpStack {
 	/**

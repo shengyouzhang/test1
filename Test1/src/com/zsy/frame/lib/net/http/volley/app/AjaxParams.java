@@ -23,34 +23,38 @@ import com.zsy.frame.lib.net.http.volley.app.params.FileTypeParam;
 import com.zsy.frame.lib.net.http.volley.app.params.StringTypeParam;
 
 public class AjaxParams {
-	// 默认编码格式
+	/**默认编码格式*/
 	private static String DEFAULT_ENCODING = "UTF-8";
-	// 一般的请求参数
-	protected Map<String, String> urlParams;
-	// 上传文件的请求参数
-	protected Map<String, FileTypeParam> fileParams;
-	// 要加密的请求参数key
+
+	/**要加密的请求参数key*/
 	private Set<String> encryptkeys;
-	private ParamEncryptor paramEncryptor;// 加密接口
-	// 文件上传验证参数
+	/**加密接口*/
+	private ParamEncryptor paramEncryptor;
+
+	/**一般的请求参数*/
+	protected Map<String, String> urlParams;
+
+	/**上传文件的请求参数*/
+	protected Map<String, FileTypeParam> fileParams;
+	/**文件上传验证参数（一般情况很少用验证字段）*/
 	protected FileParamValidatorParam fileValidatorParam;
-	// 最终包装实体
+
+	/**最终包装实体*/
 	private HttpEntity entity = null;
 
 	public AjaxParams() {
-		urlParams = new HashMap<String, String>();
-
-		fileParams = new HashMap<String, FileTypeParam>();
-
 		encryptkeys = new HashSet<String>();
+		urlParams = new HashMap<String, String>();
+		fileParams = new HashMap<String, FileTypeParam>();
 	}
 
 	/**初始化加密*/
 	public void initEncrypt(ParamEncryptor paramEncryptor, String... keys) {
 		this.paramEncryptor = paramEncryptor;
 		if (keys != null) {
-			for (String k : keys)
+			for (String k : keys) {
 				encryptkeys.add(k);
+			}
 		}
 		setEntityEmpty();
 	}
@@ -63,10 +67,11 @@ public class AjaxParams {
 
 	/**添加加密字段*/
 	public void addEncrypts(Collection<String> enKeys) {
-		if (enKeys == null || enKeys.isEmpty()) return;
+		if (enKeys == null || enKeys.isEmpty()) { return; }
 
-		for (String k : enKeys)
+		for (String k : enKeys) {
 			encryptkeys.add(k);
+		}
 		setEntityEmpty();
 	}
 
@@ -117,25 +122,23 @@ public class AjaxParams {
 		this.fileValidatorParam = fileValidatorParam;
 		setEntityEmpty();
 	}
+	
+	/**
+	 * 返回当前的普通请求参数
+	 * @return
+	 */
+	public Map<String, String> getUrlParams() {
+		return urlParams;
+	}
 
+	/**移除清空请求参数*/
 	public void remove(String key) {
 		urlParams.remove(key);
 		fileParams.remove(key);
 		setEntityEmpty();
 	}
 
-	/**
-	 * 方法概述：是否包含图片上传
-	 * 
-	 * @description 方法详细描述：
-	 * @author ldm
-	 * @param @return
-	 * @return boolean
-	 * @throws
-	 * @Title: AjaxParams.java
-	 * @Package com.huika.huixin.model.net.http
-	 * @date 2014-5-14 下午1:54:40
-	 */
+	/**是否包含图片上传*/
 	public boolean isFileUpload() {
 		return !fileParams.isEmpty();
 	}
@@ -159,13 +162,8 @@ public class AjaxParams {
 	public HttpEntity getEntity() {
 		if (entity != null) // 避免重复创建
 			return entity;
-
-		if (isFileUpload()) {
-			MultipartEntity multipartEntity = getFileUploadEntity();
-
-			entity = multipartEntity;
-		}
-		else {
+		// 无文件上传
+		if (!isFileUpload()) {
 			try {
 				entity = getCommonEntity(getParamsList());
 			}
@@ -173,7 +171,35 @@ public class AjaxParams {
 				throw new IllegalStateException("获取参数实体异常：" + e.toString());
 			}
 		}
+		else {
+			MultipartEntity multipartEntity = getFileUploadEntity();
+			entity = multipartEntity;
+		}
 		return entity;
+	}
+
+	/**
+	 * 获取普通请求的封装实体
+	 */
+	protected HttpEntity getCommonEntity(List<BasicNameValuePair> paramsList) throws UnsupportedEncodingException {
+		return new UrlEncodedFormEntity(getParamsList(), DEFAULT_ENCODING);
+	}
+
+	/**
+	 * 不包含文件上传时，参数的获取
+	 * @return
+	 */
+	protected List<BasicNameValuePair> getParamsList() {
+		List<BasicNameValuePair> lparams = new LinkedList<BasicNameValuePair>();
+
+		for (HashMap.Entry<String, String> entry : urlParams.entrySet()) {
+			lparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+		}
+		return lparams;
+	}
+
+	public String getParamString() {
+		return URLEncodedUtils.format(getParamsList(), DEFAULT_ENCODING);
 	}
 
 	/**
@@ -182,7 +208,8 @@ public class AjaxParams {
 	protected MultipartEntity getFileUploadEntity() {
 		MultipartEntity multipartEntity = new MultipartEntity();
 
-		if (fileValidatorParam != null) {// 文件验证参数追加
+		// 文件验证参数追加
+		if (fileValidatorParam != null) {
 			String validateStr = fileValidatorParam.getValidateValue(fileParams);
 			if (!TextUtils.isEmpty(validateStr)) {
 				urlParams.put(fileValidatorParam.key, validateStr);
@@ -215,35 +242,4 @@ public class AjaxParams {
 		return multipartEntity;
 	}
 
-	/**
-	 * 获取普通请求的封装实体
-	 */
-	protected HttpEntity getCommonEntity(List<BasicNameValuePair> paramsList) throws UnsupportedEncodingException {
-		return new UrlEncodedFormEntity(getParamsList(), DEFAULT_ENCODING);
-	}
-
-	/**
-	 * 不包含文件上传时，参数的获取
-	 * @return
-	 */
-	protected List<BasicNameValuePair> getParamsList() {
-		List<BasicNameValuePair> lparams = new LinkedList<BasicNameValuePair>();
-
-		for (HashMap.Entry<String, String> entry : urlParams.entrySet()) {
-			lparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-		}
-		return lparams;
-	}
-
-	public String getParamString() {
-		return URLEncodedUtils.format(getParamsList(), DEFAULT_ENCODING);
-	}
-
-	/**
-	 * 返回当前的普通请求参数
-	 * @return
-	 */
-	public Map<String, String> getUrlParams() {
-		return urlParams;
-	}
 }

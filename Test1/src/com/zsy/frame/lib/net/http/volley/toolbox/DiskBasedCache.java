@@ -35,6 +35,17 @@ import com.zsy.frame.lib.net.http.volley.VolleyLog;
 /**
  * Cache implementation that caches files directly onto the hard disk in the specified
  * directory. The default disk usage size is 5MB, but is configurable.
+ * 
+ * 继承 Cache 类，基于 Disk 的缓存实现类。
+ * 
+ * (1). 主要方法：
+public synchronized void initialize() 初始化，扫描缓存目录得到所有缓存数据摘要信息放入内存。
+public synchronized Entry get(String key) 从缓存中得到数据。先从摘要信息中得到摘要信息，然后读取缓存数据文件得到内容。
+public synchronized void put(String key, Entry entry) 将数据存入缓存内。先检查缓存是否会满，会则先删除缓存中部分数据，然后再新建缓存文件。
+private void pruneIfNeeded(int neededSpace) 检查是否能再分配 neededSpace 字节的空间，如果不能则删除缓存中部分数据。
+public synchronized void clear() 清空缓存。 public synchronized void remove(String key) 删除缓存中某个元素。
+(2). CacheHeader 类
+CacheHeader 是缓存文件摘要信息，存储在缓存文件的头部，与上面的Cache.Entry相似。
  */
 public class DiskBasedCache implements Cache {
 

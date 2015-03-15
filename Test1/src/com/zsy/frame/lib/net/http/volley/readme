@@ -1,0 +1,101 @@
+Volley 是 Google 推出的 Android 异步网络请求框架和图片加载框架。在 Google I/O 2013 大会上发布。
+Volley 有着非常好的拓展性。通过各个功能点的接口，我们可以给出自定义的，更符合我们需求的具体实现。
+多用组合，少用继承；针对接口编程，不针对具体实现编程。
+优秀框架的设计，令人叫绝，受益良多。
+
+1.2 Volley 的主要特点
+(1). 扩展性强。Volley 中大多是基于接口的设计，可配置性强。
+(2). 一定程度符合 Http 规范，包括返回 ResponseCode(2xx、3xx、4xx、5xx）的处理，请求头的处理，缓存机制的支持等。并支持重试及优先级定义。
+(3).默认 Android2.3 及以上基于 HttpURLConnection，2.3 以下基于 HttpClient 实现，这两者的区别及优劣在4.2.1 Volley中具体介绍。
+(4). 提供简便的图片加载工具。
+
+1.3 主要原理
+Volley 的总体设计图，主要是通过两种Diapatch Thread不断从RequestQueue中取出请求，
+根据是否已缓存调用Cache或Network这两类数据获取接口之一，从内存缓存或是服务器取得请求的数据，
+然后交由ResponseDelivery去做结果分发及回调处理。
+
+2.2. Volley 中的概念
+
+简单介绍一些概念，在详细设计中会仔细介绍。
+Volley 的调用比较简单，通过 newRequestQueue(…) 函数新建并启动一个请求队列RequestQueue后，只需要往这个RequestQueue不断 add Request 即可。
+Volley：Volley 对外暴露的 API，通过 newRequestQueue(…) 函数新建并启动一个请求队列RequestQueue。
+Request：表示一个请求的抽象类。StringRequest、JsonRequest、ImageRequest 都是它的子类，表示某种类型的请求。
+RequestQueue：表示请求队列，里面包含一个CacheDispatcher(用于处理走缓存请求的调度线程)、NetworkDispatcher数组(用于处理走网络请求的调度线程)，一个ResponseDelivery(返回结果分发接口)，通过 start() 函数启动时会启动CacheDispatcher和NetworkDispatchers。
+CacheDispatcher：一个线程，用于调度处理走缓存的请求。启动后会不断从缓存请求队列中取请求处理，队列为空则等待，请求处理结束则将结果传递给ResponseDelivery去执行后续处理。当结果未缓存过、缓存失效或缓存需要刷新的情况下，该请求都需要重新进入NetworkDispatcher去调度处理。
+NetworkDispatcher：一个线程，用于调度处理走网络的请求。启动后会不断从网络请求队列中取请求处理，队列为空则等待，请求处理结束则将结果传递给ResponseDelivery去执行后续处理，并判断结果是否要进行缓存。
+ResponseDelivery：返回结果分发接口，目前只有基于ExecutorDelivery的在入参 handler 对应线程内进行分发。
+HttpStack：处理 Http 请求，返回请求结果。目前 Volley 中有基于 HttpURLConnection 的HurlStack和 基于 Apache HttpClient 的HttpClientStack。
+Network：调用HttpStack处理请求，并将结果转换为可被ResponseDelivery处理的NetworkResponse。
+Cache：缓存请求结果，Volley 默认使用的是基于 sdcard 的DiskBasedCache。NetworkDispatcher得到请求结果后判断是否需要存储在 Cache，CacheDispatcher会从 Cache 中取缓存结果。
+
+
+
+
+5. 杂谈
+5.1 关于 Http 缓存
+
+Volley 构建了一套相对完整的符合 Http 语义的缓存机制。
+优点和特点
+(1). 根据Cache-Control和Expires首部来计算缓存的过期时间。如果两个首部都存在情况下，以Cache-Control为准。
+(2). 利用If-None-Match和If-Modified-Since对过期缓存或者不新鲜缓存，进行请求再验证，并处理 304 响应，更新缓存。
+(3). 默认的缓存实现，将缓存以文件的形式存储在 Disk，程序退出后不会丢失。
+
+我个人认为的不足之处
+缓存的再验证方面，在构建If-Modified-Since请求首部时，Volley 使用了服务端响应的Date首部，没有使用Last-Modified首部。整个框架没有使用Last-Modified首部。这与 Http 语义不符。
+
+private void addCacheHeaders(Map<String, String> headers, Cache.Entry entry) {
+    // If there's no cache entry, we're done.
+    if (entry == null) {
+        return;
+    }
+
+    if (entry.etag != null) {
+        headers.put("If-None-Match", entry.etag);
+    }
+
+    if (entry.serverDate > 0) {
+        Date refTime = new Date(entry.serverDate);
+        headers.put("If-Modified-Since", DateUtils.formatDate(refTime));
+    }
+}
+服务端根据请求时通过If-Modified-Since首部传过来的时间，判断资源文件是否在If-Modified-Since时间 以后 有改动，如果有改动，返回新的请求结果。如果没有改动，返回 304 not modified。
+Last-Modified代表了资源文件的最后修改时间。通常使用这个首部构建If-Modified-Since的时间。
+Date代表了响应产生的时间，正常情况下Date时间在Last-Modified时间之后。也就是Date>=Last-Modified。
+通过以上原理，既然Date>=Last-Modified。那么我利用Date构建，也是完全正确的。
+
+可能的问题出在服务端的 Http 实现上，如果服务端完全遵守 Http 语义，采用时间比较的方式来验证If-Modified-Since，判断服务器资源文件修改时间是不是在If-Modified-Since之后。那么使用Date完全正确。
+可是有的服务端实现不是比较时间，而是直接的判断服务器资源文件修改时间，是否和If-Modified-Since所传时间相等。这样使用Date就不能实现正确的再验证，因为Date的时间总不会和服务器资源文件修改时间相等。
+
+尽管使用Date可能出现的不正确情况，归结于服务端没有正确的实现 Http 语义。
+但我还是希望Volley也能完全正确的实现Http语义，至少同时处理Last-Modified和Date,并且优先使用Last-Modified。
+
+5.2 Bug
+(1). BasicNetwork.performRequest(…)
+如下代码：
+
+@Override
+public NetworkResponse performRequest(Request<?> request) throws VolleyError {
+    ……
+    while (true) {
+        ……
+        try {
+            ……
+        } catch (IOException e) {
+            int statusCode = 0;
+            NetworkResponse networkResponse = null;
+            ……
+            if (responseContents != null) {
+              ……
+            } else {
+                throw new NetworkError(networkResponse);
+            }
+        }
+    }
+}
+BasicNetwork.performRequest(…) 最后的
+
+throw new NetworkError(networkResponse);
+应该是
+
+throw new NetworkError(e);
+更合理。

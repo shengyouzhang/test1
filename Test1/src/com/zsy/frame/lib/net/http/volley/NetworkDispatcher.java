@@ -27,15 +27,18 @@ import android.os.Process;
  * specified {@link Network} interface. Responses are committed to cache, if
  * eligible, using a specified {@link Cache} interface. Valid responses and
  * errors are posted back to the caller via a {@link ResponseDelivery}.
+ * 
+ * 一个线程，用于调度处理走网络的请求。启动后会不断从网络请求队列中取请求处理，队列为空则等待，
+ * 请求处理结束则将结果传递给ResponseDelivery去执行后续处理，并判断结果是否要进行缓存。
  */
 public class NetworkDispatcher extends Thread {
-	/** The queue of requests to service. */
+	/** The queue of requests to service. 网络请求队列*/
 	private final BlockingQueue<Request<?>> mQueue;
-	/** The network interface for processing requests. */
+	/** The network interface for processing requests. 网络类，代表了一个可以执行请求的网络 */
 	private final Network mNetwork;
-	/** The cache to write to. */
+	/** The cache to write to.  缓存类，代表了一个可以获取请求结果，存储请求结果的缓存*/
 	private final Cache mCache;
-	/** For posting responses and errors. */
+	/** For posting responses and errors.请求结果传递类，可以传递请求的结果或者错误到调用者 */
 	private final ResponseDelivery mDelivery;
 	/** Used for telling us to die. */
 	private volatile boolean mQuit = false;

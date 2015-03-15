@@ -18,6 +18,7 @@ import com.zsy.frame.lib.net.http.volley.Cache.Entry;
 
 /**
  * A cache that doesn't.
+ * 继承 Cache 类，不做任何操作的缓存实现类，可将它作为构建RequestQueue的参数以实现一个不带缓存的请求队列。
  */
 public class NoCache implements Cache {
 	@Override

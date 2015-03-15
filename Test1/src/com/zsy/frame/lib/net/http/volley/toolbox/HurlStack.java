@@ -44,6 +44,7 @@ import com.zsy.frame.lib.net.http.volley.VolleyLog;
 
 /**
  * An {@link HttpStack} based on {@link HttpURLConnection}.
+ * 实现 HttpStack 接口，利用 Java 的 HttpURLConnection 进行各种请求方式的请求。
  */
 public class HurlStack implements HttpStack {
 
@@ -86,7 +87,7 @@ public class HurlStack implements HttpStack {
 	@Override
 	public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeaders) throws IOException, AuthFailureError {
 		String url = request.getUrl();
-		VolleyLog.d("url请求地址：%s", url);
+		VolleyLog.d("client请求地址：%s", url);
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.putAll(request.getHeaders());
 		map.putAll(additionalHeaders);
@@ -231,8 +232,10 @@ public class HurlStack implements HttpStack {
 		}
 	}
 
+	/**这里其实就是用的HttpURLConnection请求网络*/
 	private static void addBodyIfExists(HttpURLConnection connection, Request<?> request) throws IOException, AuthFailureError {
-		// fan
+		// samy
+		// IOC拿到请求的参数数据写入到body流中；将要上传的内容写入流中
 		HttpEntity entity = request.getHttpEntity();
 		if (entity != null) {
 			VolleyLog.d("addBodyIfExists=self");
@@ -253,6 +256,7 @@ public class HurlStack implements HttpStack {
 			}
 			return;
 		}
+
 		// old
 		byte[] body = request.getBody();
 		if (body != null) {

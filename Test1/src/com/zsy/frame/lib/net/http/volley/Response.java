@@ -17,6 +17,9 @@ package com.zsy.frame.lib.net.http.volley;
  * Encapsulates a parsed response for delivery.
  *
  * @param <T> Parsed type of this response
+ * 
+ * 封装了经过解析后的数据，用于传输。并且有两个内部接口 Listener 和 ErrorListener 分别可表示请求失败和成功后的回调。
+Response 的构造函数被私有化，而通过两个函数名更易懂的静态方法构建对象。
  */
 public class Response<T> {
 

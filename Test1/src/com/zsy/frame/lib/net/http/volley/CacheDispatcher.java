@@ -25,21 +25,25 @@ import android.os.Process;
  * {@link ResponseDelivery}.  Cache misses and responses that require
  * refresh are enqueued on the specified network queue for processing
  * by a {@link NetworkDispatcher}.
+ * 
+ * 一个线程，用于调度处理走缓存的请求。启动后会不断从缓存请求队列中取请求处理，队列为空则等待，请求处理结束则将结果传递给ResponseDelivery去执行后续处理。
+ * 当结果未缓存过、缓存失效或缓存需要刷新的情况下，该请求都需要重新进入NetworkDispatcher去调度处理。
+ * 
  */
 public class CacheDispatcher extends Thread {
 
 	private static final boolean DEBUG = VolleyLog.DEBUG;
 
-	/** The queue of requests coming in for triage. */
+	/** The queue of requests coming in for triage. 缓存请求队列*/
 	private final BlockingQueue<Request<?>> mCacheQueue;
 
-	/** The queue of requests going out to the network. */
+	/** The queue of requests going out to the network. 网络请求队列*/
 	private final BlockingQueue<Request<?>> mNetworkQueue;
 
-	/** The cache to read from. */
+	/** The cache to read from.  缓存类，代表了一个可以获取请求结果，存储请求结果的缓存*/
 	private final Cache mCache;
 
-	/** For posting responses. */
+	/** For posting responses.  请求结果传递类*/
 	private final ResponseDelivery mDelivery;
 
 	/** Used for telling us to die. */

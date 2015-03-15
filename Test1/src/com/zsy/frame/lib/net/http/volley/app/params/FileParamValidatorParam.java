@@ -12,10 +12,12 @@ import com.zsy.frame.lib.net.http.encrypt.Base64Encoder;
 import com.zsy.frame.lib.net.http.encrypt.MD5Security;
 
 /**
- * 用于文件上传时，添加验证字段,惠信用到了
+ * @description：用于文件上传时，添加验证字段
+ * @author samy
+ * @date 2015-3-15 下午4:54:47
  */
 public class FileParamValidatorParam {
-	// 验证字段参数key
+	/**验证字段参数key*/
 	public String key;
 
 	public FileParamValidatorParam(String key) {

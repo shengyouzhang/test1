@@ -8,7 +8,6 @@ import org.apache.http.HttpEntity;
 import com.zsy.frame.lib.net.http.volley.AuthFailureError;
 import com.zsy.frame.lib.net.http.volley.NetworkResponse;
 import com.zsy.frame.lib.net.http.volley.Request;
-import com.zsy.frame.lib.net.http.volley.Request.Method;
 import com.zsy.frame.lib.net.http.volley.Response;
 import com.zsy.frame.lib.net.http.volley.Response.ErrorListener;
 import com.zsy.frame.lib.net.http.volley.Response.Listener;
@@ -16,12 +15,9 @@ import com.zsy.frame.lib.net.http.volley.VolleyError;
 import com.zsy.frame.lib.net.http.volley.VolleyLog;
 
 /**
- * 
- * @author fanxing
- * @Description
- * form表单请求
- * @param <T>
- * 返回结果类型
+ * @description：form表单请求
+ * @author samy
+ * @date 2015-3-15 下午3:54:47
  */
 public abstract class FormBaseRequest<T> extends Request<T> {
 	public final static String CONTENT_LENGTH = "Content-Length";
@@ -63,7 +59,7 @@ public abstract class FormBaseRequest<T> extends Request<T> {
 	}
 
 	/**
-	 * 设置请求头部信息
+	 * 设置请求头部信息(一般文件上传得修改头参数)
 	 */
 	@Override
 	public Map<String, String> getHeaders() throws AuthFailureError {
@@ -80,28 +76,7 @@ public abstract class FormBaseRequest<T> extends Request<T> {
 		}
 		mHeaders.put(key, value);
 	}
-
-	/**
-	 * 解析请求回来的数据
-	 */
-	@Override
-	protected abstract Response<T> parseNetworkResponse(NetworkResponse response);
-
-	/**
-	 * 请求回调转发
-	 */
-	@Override
-	protected void deliverResponse(T response) {
-		if (mListener != null) mListener.onResponse(response);
-	}
-
-	/**
-	 * 获取数据包内容类型
-	 */
-	@Override
-	public String getBodyContentType() {
-		return requestParams.getEntity().getContentType().getValue();
-	}
+	
 
 	/**
 	 * 获取数据包实体，也可以重写{@link #getBody()}, 但此方法必须返回空，参见改动说明1
@@ -114,6 +89,30 @@ public abstract class FormBaseRequest<T> extends Request<T> {
 			deliverError(new HttpEntityError());
 		}
 		return requestParams.getEntity();
+	}
+	
+	/**
+	 * 获取数据包内容类型
+	 */
+	@Override
+	public String getBodyContentType() {
+		return requestParams.getEntity().getContentType().getValue();
+	}
+
+	/**
+	 * 解析请求回来的数据
+	 */
+	@Override
+	protected abstract Response<T> parseNetworkResponse(NetworkResponse response);
+
+	/**
+	 * 请求回调转发
+	 */
+	@Override
+	protected void deliverResponse(T response) {
+		if (mListener != null) {
+			mListener.onResponse(response);
+		}
 	}
 
 	/**

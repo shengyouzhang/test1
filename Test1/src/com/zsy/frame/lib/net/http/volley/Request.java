@@ -30,6 +30,21 @@ import android.text.TextUtils;
 import com.zsy.frame.lib.net.http.volley.VolleyLog.MarkerLog;
 
 /**
+ * 
+Volley 支持 8 种 Http 请求方式 GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, PATCH
+Request 类中包含了请求 url，请求请求方式，请求 Header，请求 Body，请求的优先级等信息。
+
+因为是抽象类，子类必须重写的两个方法。
+abstract protected Response<T> parseNetworkResponse(NetworkResponse response);
+子类重写此方法，将网络返回的原生字节内容，转换成合适的类型。此方法会在工作线程中被调用。
+abstract protected void deliverResponse(T response);
+子类重写此方法，将解析成合适类型的内容传递给它们的监听回调。
+
+以下两个方法也经常会被重写
+public byte[] getBody()
+重写此方法，可以构建用于 POST、PUT、PATCH 请求方式的 Body 内容。
+protected Map<String, String> getParams()
+在上面getBody函数没有被重写情况下，此方法的返回值会被 key、value 分别编码后拼装起来转换为字节码作为 Body 内容。
  * Base class for all network requests.
  *
  * @param <T> The type of parsed response this request expects.
@@ -575,7 +590,6 @@ public abstract class Request<T> implements Comparable<Request<T>> {
 		return (mCanceled ? "[X] " : "[ ] ") + getUrl() + " " + trafficStatsTag + " " + getPriority() + " " + mSequence;
 	}
 
-	// fan
 	public HttpEntity getHttpEntity() {
 		return null;
 	}

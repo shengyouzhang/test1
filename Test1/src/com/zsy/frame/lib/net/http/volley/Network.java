@@ -15,6 +15,9 @@ package com.zsy.frame.lib.net.http.volley;
 
 /**
  * An interface for performing requests.
+ * 调用HttpStack处理请求，并将结果转换为可被ResponseDelivery处理的NetworkResponse
+ * 代表网络的接口，处理网络请求。
+ * 唯一的方法，用于执行特定请求。
  */
 public interface Network {
 	/**

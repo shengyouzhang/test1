@@ -44,6 +44,8 @@ import com.zsy.frame.lib.net.http.volley.VolleyLog;
 
 /**
  * An HttpStack that performs request over an {@link HttpClient}.
+ * 实现 HttpStack 接口，利用 Apache 的 HttpClient 进行各种请求方式的请求。
+基本就是 org.apache.http 包下面相关类的常见用法，不做详解，不过与下面 HttpURLConnection 做下对比就能发现 HttpURLConnection 的 API 相对简单的多。
  */
 public class HttpClientStack implements HttpStack {
 	protected final HttpClient mClient;

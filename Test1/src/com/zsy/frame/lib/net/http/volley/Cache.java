@@ -18,6 +18,25 @@ import java.util.Map;
 
 /**
  * An interface for a cache keyed by a String with a byte array as data.
+ * 缓存请求结果，Volley 默认使用的是基于 sdcard 的DiskBasedCache。
+ * 缓存接口，代表了一个可以获取请求结果，存储请求结果的缓存。
+ * NetworkDispatcher得到请求结果后判断是否需要存储在 Cache，CacheDispatcher会从 Cache 中取缓存结果。
+ * 
+(1). 主要方法：
+public Entry get(String key); 通过 key 获取请求的缓存实体
+public void put(String key, Entry entry); 存入一个请求的缓存实体
+public void remove(String key); 移除指定的缓存实体
+public void clear(); 清空缓存
+(2). 代表缓存实体的内部类 Entry
+成员变量和方法
+byte[] data 请求返回的数据（Body 实体）
+String etag Http 响应首部中用于缓存新鲜度验证的 ETag
+long serverDate Http 响应首部中的响应产生时间
+long ttl 缓存的过期时间
+long softTtl 缓存的新鲜时间
+Map<String, String> responseHeaders 响应的 Headers
+boolean isExpired() 判断缓存是否过期，过期缓存不能继续使用
+boolean refreshNeeded() 判断缓存是否新鲜，不新鲜的缓存需要发到服务端做新鲜度的检测
  */
 public interface Cache {
 	/**
