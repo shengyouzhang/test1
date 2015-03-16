@@ -73,7 +73,9 @@ public class HttpClientStack implements HttpStack {
 
 	@Override
 	public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeaders) throws IOException, AuthFailureError {
-		VolleyLog.d("client请求地址：%s", request.getUrl());
+		if (VolleyLog.DEBUG) {
+			VolleyLog.d("client用：HttpClientStack请求地址：%s", request.getUrl());
+		}
 		HttpUriRequest httpRequest = createHttpRequest(request, additionalHeaders);
 		addHeaders(httpRequest, additionalHeaders);
 		addHeaders(httpRequest, request.getHeaders());

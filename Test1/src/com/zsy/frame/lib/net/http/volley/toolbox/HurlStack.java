@@ -87,7 +87,9 @@ public class HurlStack implements HttpStack {
 	@Override
 	public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeaders) throws IOException, AuthFailureError {
 		String url = request.getUrl();
-		VolleyLog.d("client请求地址：%s", url);
+		if (VolleyLog.DEBUG) {
+			VolleyLog.d("client用：HurlStack请求地址：%s", url);
+		}
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.putAll(request.getHeaders());
 		map.putAll(additionalHeaders);
@@ -238,7 +240,9 @@ public class HurlStack implements HttpStack {
 		// IOC拿到请求的参数数据写入到body流中；将要上传的内容写入流中
 		HttpEntity entity = request.getHttpEntity();
 		if (entity != null) {
-			VolleyLog.d("addBodyIfExists=self");
+			if (VolleyLog.DEBUG) {
+				VolleyLog.d("addBodyIfExists=self");
+			}
 			InputStream instream = entity.getContent();
 			connection.setDoOutput(true);
 			connection.addRequestProperty(HEADER_CONTENT_TYPE, entity.getContentType().getValue());

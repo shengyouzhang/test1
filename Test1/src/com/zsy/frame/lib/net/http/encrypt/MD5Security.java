@@ -22,20 +22,7 @@ public class MD5Security {
 	}
 
 	/**
-	 * 
 	 * 方法概述：MD516位加密
-	 * 
-	 * @description 方法详细描述：
-	 * @author lhy
-	 * @param @param input
-	 * @param @param bit
-	 * @param @return
-	 * @param @throws Exception
-	 * @return String
-	 * @throws
-	 * @Title: MD5Security.java
-	 * @Package com.huika.huixin.utils
-	 * @date 2014-4-2 上午11:17:18
 	 */
 	public static String getMd5_16(String input, int bit) throws Exception {
 		try {
@@ -50,18 +37,7 @@ public class MD5Security {
 	}
 
 	/**
-	 * 
 	 * 方法概述：MD532位加密
-	 * 
-	 * @description 方法详细描述：
-	 * @author lhy
-	 * @param @param plainText
-	 * @param @return
-	 * @return String
-	 * @throws
-	 * @Title: MD5Security.java
-	 * @Package com.huika.huixin.utils
-	 * @date 2014-4-2 上午11:17:38
 	 */
 	public static String getMd5_32(String plainText) {
 		String re_md5 = new String();

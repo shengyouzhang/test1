@@ -24,10 +24,12 @@ import com.zsy.frame.lib.image.imageloader.core.listener.SimpleImageLoadingListe
 
 /**
  * @description：
- *               如果图片显示简单的话可以不用UIL显示，直接用Velloy自带的简单显示图片；
- *               UniversalImageLoad加载显示类
- *               注意事项，必须在Application初始化配置一下；
- *               ImageLoader.getInstance().init(ImgCacheUtil.getInstance().getImgLoaderConfig());
+ * Android Universal Image Loader 是一个强大的、可高度定制的图片缓存，本文简称为UIL。
+ * 简单的说 UIL 就做了一件事——获取图片并显示在相应的控件上。
+ * 如果图片显示简单的话可以不用UIL显示，直接用Velloy自带的简单显示图片；
+ * UniversalImageLoad加载显示类
+ *  注意事项，必须在Application初始化配置一下；
+ *  ImageLoader.getInstance().init(ImgCacheUtil.getInstance().getImgLoaderConfig());
  * @author samy
  * @date 2014年11月11日 下午2:07:16
  */
@@ -84,6 +86,27 @@ public class ImgCacheUtils {
 	public ImageLoaderConfiguration getImgLoaderConfig() {
 		return imageConfig;
 	}
+	
+	public DisplayImageOptions getImageOptionsConfig() {
+		return imageOptions;
+	}
+	
+	
+	/**
+	 * @description：下载图片，解析为 Bitmap 传递给回调接口。
+	 * @author samy
+	 * @date 2015-3-16 下午10:45:35
+	 */
+	public void displayImage(String imageUri){
+		ImageLoader.getInstance().loadImage(imageUri, new SimpleImageLoadingListener() {
+		    @Override
+		    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+		    	
+		    }
+		});
+	}
+	
+	
 
 	/**
 	 * String imageUri = "http://site.com/image.png"; // from Web
@@ -97,8 +120,8 @@ public class ImgCacheUtils {
 	 * @param imageView
 	 * @param imageOptions
 	 */
-	public void displayImage(String url, ImageView imageView) {
-		ImageLoader.getInstance().displayImage(url, imageView, imageOptions);
+	public void displayImage(String imageUri, ImageView imageView) {
+		ImageLoader.getInstance().displayImage(imageUri, imageView, imageOptions);
 	}
 
 	/**
@@ -107,9 +130,11 @@ public class ImgCacheUtils {
 	 * @param listener
 	 *            监听图片下载情况
 	 */
-	public void displayImage(String url, ImageView imageView, ImageLoadingListener listener) {
-		ImageLoader.getInstance().displayImage(url, imageView, imageOptions, listener);
+	public void displayImage(String imageUri, ImageView imageView, ImageLoadingListener listener) {
+		ImageLoader.getInstance().displayImage(imageUri, imageView, imageOptions, listener);
 	}
+	
+	
 
 	/**
 	 * @description：是否显示动画加载
